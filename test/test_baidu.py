@@ -3,6 +3,7 @@ import unittest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from utils.config import Config, DRIVER_PATH
+from utils.log import logger
 
 class TestBaiDu(unittest.TestCase):
     URL = Config().get('URL')
@@ -30,7 +31,7 @@ class TestBaiDu(unittest.TestCase):
         time.sleep(2)
         links = self.driver.find_elements(*locator_result)
         for link in links:
-            print(link.text)
+            logger.info(link.text)
 
     def test_search1(self):
         self.driver.find_element(*locator_kw).send_keys('python')
@@ -38,21 +39,7 @@ class TestBaiDu(unittest.TestCase):
         time.sleep(2)
         links = self.driver.find_elements(*locator_result)
         for link in links:
-            print(link.text)
+            logger.info(link.text)
 
 if __name__ == '__main__':
     unittest.main()
-
-
-
-
-
-
-driver.find_element(*locator_kw).send_keys('selenium')
-driver.find_element(*locator_su).click()
-time.sleep(2)
-links = driver.find_elements(*locator_result)
-for link in links:
-    print(link.text)
-driver.quit()
-
