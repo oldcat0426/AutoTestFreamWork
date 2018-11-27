@@ -2,11 +2,13 @@ import time
 import unittest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from utils.config import Config, DRIVER_PATH
+from utils.config import Config, DRIVER_PATH, DATA_PATH
 from utils.log import logger
+from utils.file_reader import ExcelReader
 
 class TestBaiDu(unittest.TestCase):
     URL = Config().get('URL')
+    excel = DATA_PATH + '/baidu.xlsx'
 
     # 创建chrome参数对象
     opt = webdriver.ChromeOptions()
@@ -17,29 +19,27 @@ class TestBaiDu(unittest.TestCase):
     locator_su = (By.ID, 'su')
     locator_result = (By.XPATH, '//div[contains(@class, "result")]/h3/a')
 
-    def setUp(self):
+    def sub_setUp(self):
         # executable_path为驱动路径，options为
         self.driver = webdriver.Chrome(executable_path=DRIVER_PATH + '\chromedriver.exe', options=opt)
         self.driver.get(URL)
 
-    def tearDown(self):
+    def sub_tearDown(self):
         self.driver.quit()
 
     def test_search0(self):
-        self.driver.find_element(*locator_kw).send_keys('selenium')
-        self.driver.find_element(*locator_su).click()
-        time.sleep(2)
-        links = self.driver.find_elements(*locator_result)
-        for link in links:
-            logger.info(link.text)
+        datas = ExcelReader(self.excel).data
+        for d in datas:
+            with self.subTest(data= d):
+                self.sub_setUp()
+                self.driver.find_element(*locator_kw).send_keys(d['search'])
+                self.driver.find_element(*locator_su).click()
+                time.sleep(2)
+                links = self.driver.find_elements(*locator_result)
+                for link in links:
+                    logger.info(link.text)
+                self.sub_tearDown()
 
-    def test_search1(self):
-        self.driver.find_element(*locator_kw).send_keys('python')
-        self.driver.find_element(*locator_su).click()
-        time.sleep(2)
-        links = self.driver.find_elements(*locator_result)
-        for link in links:
-            logger.info(link.text)
 
 if __name__ == '__main__':
     unittest.main()
